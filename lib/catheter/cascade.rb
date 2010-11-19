@@ -26,13 +26,14 @@ module Catheter
       return @result if name == :base
       return @result unless @cascade.has_key?(name)
       
-      @result = base
       top = @cascade[name]
       dependencies = top[:depends]
-      dependencies.reverse.each do |depenency|
+      dependencies.reverse.each do |dependency|
         next unless @cascade.has_key?(dependency) && @cascade[dependency].has_key?(:block)
         @cascade[dependency][:block].call(self, opts)
       end
+      
+      top[:block].call(self, opts)
       
       @result
     end
@@ -41,6 +42,10 @@ module Catheter
       return unless @result
       
       @result[k] = v
+    end
+    
+    def get_value(k)
+      @result[k] if @result
     end
   end
 end
