@@ -43,6 +43,10 @@ class TestCatheter < MiniTest::Unit::TestCase
   end
   
   def test_layers_that_depend_on_layers_that_depend_on_layers
-    
+    flunk
+  end
+  
+  def test_layers_that_depend_on_layers_with_different_paths
+    flunk
   end
 end
