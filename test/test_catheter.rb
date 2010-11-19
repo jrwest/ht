@@ -59,26 +59,26 @@ class TestCatheter < MiniTest::Unit::TestCase
   end
   
   def test_build_dependency_case_base_case
-    cascade = {base: {depends: nil}, block: nil}
+    cascade = {base: {depends: nil, block: nil}}
     
     assert_equal [], CASCADE.build_dependency_list(:base, cascade)
   end
   
   def test_build_dependency_base_case_when_layers_exist
-    cascade = {base: {depends: nil}, block: nil, contribute_base: {depends: [:base], block: nil}}
+    cascade = {base: {depends: nil, block: nil}, contribute_base: {depends: [:base], block: nil}}
     
     assert_equal [], CASCADE.build_dependency_list(:base, cascade)
   end
   
   def test_build_dependency_one_layer_up
-    cascade = {base: {depends: nil}, block: nil, 
+    cascade = {base: {depends: nil, block: nil}, 
                contribute_base: {depends: [:base], block: nil}}
                
     assert_equal [:base], CASCADE.build_dependency_list(:contribute_base, cascade)
   end
   
   def test_build_dependency_two_layers_up
-    cascade = {base: {depends: nil}, block: nil, 
+    cascade = {base: {depends: nil, block: nil}, 
                contribute_base: {depends: [:base], block: nil},
                contribute_part: {depends: [:contribute_base], block: nil}}
     
@@ -86,7 +86,7 @@ class TestCatheter < MiniTest::Unit::TestCase
   end
   
   def test_build_dependency_three_layers_up
-    cascade = {base: {depends: nil}, block: nil, 
+    cascade = {base: {depends: nil, block: nil}, 
                contribute_base: {depends: [:base], block: nil},
                contribute_part: {depends: [:contribute_base], block: nil},
                contribute_part_2: {depends: [:contribute_part], block: nil}}
@@ -110,4 +110,5 @@ class TestCatheter < MiniTest::Unit::TestCase
     assert_equal [:contribute_part_2, :contribute_part, :contribute_base, :base], CASCADE.build_dependency_list(:contribute_part_3, cascade)
     assert_equal expected, CASCADE.build_dependency_list(:contribute_part_5, cascade)
   end
+
 end
