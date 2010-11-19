@@ -1,33 +1,33 @@
 require 'helper'
 
 CASCADE = Catheter::Cascade.new(:my_cascade) do |t|
-  t.base do |t, opts|
-    t.set_value :item, opts[:item]
-    t.set_value :image, "#{opts[:player]}.png"
+  t.base do |to, opts|
+    to.set_value :item, opts[:item]
+    to.set_value :image, "#{opts[:player]}.png"
   end
   
-  t.layer name: :contribute_base do |t, opts|
-    t.set_value :player, opts[:player]
-    t.set_value :image, "#{opts[:item]}.png"
+  t.layer name: :contribute_base do |to, opts|
+    to.set_value :player, opts[:player]
+    to.set_value :image, "#{opts[:item]}.png"
   end
   
-  t.layer name: :contribute_part, depends: [:contribute_base] do |t, opts|
-    t.set_value :body, t.get_value(:image)
+  t.layer name: :contribute_part, depends: [:contribute_base] do |to, opts|
+    to.set_value :body, t.get_value(:image)
   end
   
-  t.layer name: :contribute_part_1, depends: [:contribute_base] do |t, opts|
-    t.set_value :body, "zxy"
-    t.set_value :field, "def"
-    t.set_value :field2, "123"
+  t.layer name: :contribute_part_1, depends: [:contribute_base] do |to, opts|
+    to.set_value :body, "zxy"
+    to.set_value :field, "def"
+    to.set_value :field2, "123"
   end
   
-  t.layer name: :contribute_all, depends: [:contribute_part] do |t, opts|
-    t.set_value :body, "abc"
+  t.layer name: :contribute_all, depends: [:contribute_part] do |to, opts|
+    to.set_value :body, "abc"
   end
   
-  t.layer name: :contribute_super, depends: [:contribute_part, :contribute_part_1] do |t, opts|
-    t.set_value :field, "efg"
-    t.set_value :field3, "456"
+  t.layer name: :contribute_super, depends: [:contribute_part, :contribute_part_1] do |to, opts|
+    to.set_value :field, "efg"
+    to.set_value :field3, "456"
   end
 end
 
