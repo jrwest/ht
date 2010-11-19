@@ -38,9 +38,11 @@ module Catheter
     def build_dependency_list(name, cascade = @cascade)
       #direct_dependencies = cascade[name][:depends] +  ? cascade[name][:depends] : []
       if direct_dependencies = cascade[name][:depends]
-        direct_dependencies + direct_dependencies.inject([]) do |deps, direct|
-          deps + build_dependency_list(direct, cascade)
-        end
+        (direct_dependencies + direct_dependencies.inject([]) do |deps, direct|
+          dependency_deps = build_dependency_list(direct, cascade)
+          dependency_deps -= [:base] unless direct == direct_dependencies.last
+          deps + dependency_deps
+        end).uniq
       else
         []
       end

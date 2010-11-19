@@ -111,4 +111,50 @@ class TestCatheter < MiniTest::Unit::TestCase
     assert_equal expected, CASCADE.build_dependency_list(:contribute_part_5, cascade)
   end
 
+  
+  def test_build_dependency_two_layers_two_branches
+    cascade = {base: {depends: nil, block: nil},
+               contribute_base_1: {depends: [:base], block:nil},
+               contribute_base_2: {depends: [:base], block:nil},
+               contribute_part_1: {depends: [:contribute_base_1, :contribute_base_2]}}
+
+
+    assert_equal [:contribute_base_1, :contribute_base_2, :base], CASCADE.build_dependency_list(:contribute_part_1, cascade)
+    
+    cascade = {base: {depends: nil, block: nil},
+               contribute_base_1: {depends: [:base], block:nil},
+               contribute_base_2: {depends: [:base], block:nil},
+               contribute_part_1: {depends: [:contribute_base_2, :contribute_base_1]}}
+               
+    assert_equal [:contribute_base_2, :contribute_base_1, :base], CASCADE.build_dependency_list(:contribute_part_1, cascade)
+  end
+  
+  def test_build_dependency_two_layers_three_branches
+    cascade = {base: {depends: nil, block: nil},
+               contribute_base_1: {depends: [:base], block:nil},
+               contribute_base_2: {depends: [:base], block:nil},
+               contribute_base_3: {depends: [:base], block:nil},
+               contribute_part_1: {depends: [:contribute_base_1, :contribute_base_2]}, 
+               contribute_part_2: {depends: [:contribute_base_3, :contribute_base_1, :contribute_base_2]}}
+               
+    assert_equal [:contribute_base_1, :contribute_base_2, :base], CASCADE.build_dependency_list(:contribute_part_1, cascade)
+    assert_equal [:contribute_base_3, :contribute_base_1, :contribute_base_2, :base], CASCADE.build_dependency_list(:contribute_part_2, cascade) 
+    
+  end
+  
+  def test_build_dependency_three_layers_5_branches
+    cascade = {base: {depends: nil, block: nil},
+               contribute_base_1: {depends: [:base], block:nil},
+               contribute_base_2: {depends: [:base], block:nil},
+               contribute_base_3: {depends: [:base], block:nil},
+               contribute_part_1: {depends: [:contribute_base_1, :contribute_base_2]}, 
+               contribute_part_2: {depends: [:contribute_base_3, :contribute_base_1, :contribute_base_2]},
+               contribute_top: {depends: [:contribute_part_1, :contribute_part_2], block: nil}}
+               
+               
+    expected = [:contribute_part_1, :contribute_part_2, :contribute_base_1, :contribute_base_2, :contribute_base_3, :base]         
+    assert_equal [:contribute_base_1, :contribute_base_2, :base], CASCADE.build_dependency_list(:contribute_part_1, cascade)
+    assert_equal [:contribute_base_3, :contribute_base_1, :contribute_base_2, :base], CASCADE.build_dependency_list(:contribute_part_2, cascade) 
+    assert_equal expected, CASCADE.build_dependency_list(:contribute_top, cascade) 
+  end
 end
