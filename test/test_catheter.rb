@@ -15,8 +15,19 @@ CASCADE = Catheter::Cascade.new(:my_cascade) do |t|
     t.set_value :body, t.get_value(:image)
   end
   
+  t.layer name: :contribute_part_1, depends: [:contribute_base] do |t, opts|
+    t.set_value :body, "zxy"
+    t.set_value :field, "def"
+    t.set_value :field2, "123"
+  end
+  
   t.layer name: :contribute_all, depends: [:contribute_part] do |t, opts|
     t.set_value :body, "abc"
+  end
+  
+  t.layer name: :contribute_super, depends: [:contribute_part, :contribute_part_1] do |t, opts|
+    t.set_value :field, "efg"
+    t.set_value :field3, "456"
   end
 end
 
@@ -55,7 +66,15 @@ class TestCatheter < MiniTest::Unit::TestCase
   end
   
   def test_layers_that_depend_on_layers_with_different_paths
-    flunk
+    result = CASCADE.build(:contribute_super, OPTS)
+    
+    assert_equal "#{OPTS[:item]}.png", result[:body]
+    assert_equal OPTS[:player], result[:player]
+    assert_equal "#{OPTS[:item]}.png", result[:image] 
+    assert_equal "efg", result[:field]
+    assert_equal "123", result[:field2]
+    assert_equal "456", result[:field3]
+    
   end
   
   def test_build_dependency_case_base_case
