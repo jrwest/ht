@@ -15,9 +15,8 @@ module Catheter
       @cascade[:base] = {depends: nil, block: block}
     end
     
-    def layer(opts, &block)
-      depends = (opts[:depends] && opts[:depends].size > 0) ? opts[:depends] : [:base]
-      @cascade[opts[:name]] = {depends: depends, block: block}
+    def layer(name, dependency=:base, &block)
+      @cascade[name] = {depends: dependency, block: block}
     end
 
     def build(name, opts)
@@ -36,17 +35,17 @@ module Catheter
     end
     
     def build_dependency_list(name, cascade = @cascade)
-      if direct_dependencies = cascade[name][:depends]
-        (direct_dependencies + direct_dependencies.inject([]) do |deps, direct|
-          dependency_deps = build_dependency_list(direct, cascade)
-          dependency_deps -= [:base] unless direct == direct_dependencies.last
-          deps + dependency_deps
-        end).uniq
-      else
+      if direct_dependency = cascade[name][:depends]
+        [direct_dependency] + build_dependency_list(direct_dependency, cascade)
+      else 
         []
       end
     end
     
+    def get_direct_dependencies(name, cascade)
+      (cascade[name] || {})[:depends] || []
+    end
+        
     def set_value(k, v)
       return unless @result
       
