@@ -1,4 +1,4 @@
-module Catheter
+module HT
   class Cascade
     attr_accessor :name
     attr_reader   :cascade

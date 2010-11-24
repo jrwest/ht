@@ -1,6 +1,6 @@
 require 'helper'
 
-CASCADE = Catheter::Cascade.new(:my_cascade) do |t|
+CASCADE = HT::Cascade.new(:my_cascade) do |t|
   t.base do |to, opts|
     to.set_value :item, opts[:item]
     to.set_value :image, "#{opts[:player]}.png"
@@ -30,7 +30,7 @@ end
 
 OPTS = {:player => "jordanrw", :item => "cool-thing"}
 
-class TestCatheter < MiniTest::Unit::TestCase
+class TestHT < MiniTest::Unit::TestCase
   def test_base
     result = CASCADE.build(:base, OPTS)
     
