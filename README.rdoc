@@ -1,6 +1,6 @@
-= catheter
+= HT
 
-Description goes here.
+Simple templating for ruby hashes
 
 == Contributing to catheter
  
