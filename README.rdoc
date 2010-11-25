@@ -2,6 +2,55 @@
 
 Simple templating for ruby hashes
 
+= Example Usage
+
+    cascade = HT::Cascade.new(:my_cascade) do |t|
+      t.base do |t, data|
+        t.set_value :d, "abc"
+      end
+    
+      t.layer :path_share do |t, data|
+        t.set_value :a, data[:a]
+        t.set_value :b, data[:b]
+      end
+      
+      t.layer :path_1_mid, :path_share do |t, data|
+        t.set_value :a, data[:b]
+      end
+      
+      t.layer :path_2_mid, :path_share do |t, data|
+        t.set_value t.get_value(:a), :a
+        t.set_value t.get_value(:b), :b
+      end
+      
+      t.layer :path_1_all, :path_1_mid do |t, data|
+        t.set_value :b, data[:a]
+        t.set_value :c, t.get_value(:a) + t.get_value(:b)
+      end
+      
+      t.layer :path_2_all, :path_2_mid do |t, data|
+        t.set_value :c, data[:a] * data[:b]
+      end
+    end
+    
+    >> cascade.build(:path_1_all, {:a => 1, :b => 2})
+    {:a => 2, :b => 1, :c => 3, :d => "abc"}
+    
+    >> cascade.build(:path_1_mid, {:a => 1, :b => 2})
+    {:a => :2, :b => 2, :d => "abc"}
+   
+    >> cascade.build(:path_2_all, {:a => 1, :b => 2})
+    {1 => :a, 2 => :b, :a => 1, :b => 2, :c => 2, :d => "abc"}
+   
+    >> cascade.build(:path_2_mid, {:a => 1, :b => 2})
+    {1 => :a, 2 => :b, , :a => 1, :b => 2, :d => "abc"}
+   
+    >> cascade.build(:path_share, {:a => 1, :b => 2})
+    {:a => 1, :b => 2, :d => "abc"}
+   
+    >> cascade.build(:base, {:a => 1, :b => 2})
+    {:d => "abc"}
+
 == Contributing to catheter
  
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
