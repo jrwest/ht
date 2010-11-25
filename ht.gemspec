@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
     "README.rdoc",
     "Rakefile",
     "VERSION",
+    "ht.gemspec",
     "lib/ht.rb",
     "lib/ht/cascade.rb",
     "test/helper.rb",
