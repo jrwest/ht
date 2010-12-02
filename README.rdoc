@@ -51,7 +51,7 @@ Simple templating for ruby hashes
     >> cascade.build(:base, {:a => 1, :b => 2})
     {:d => "abc"}
 
-== Contributing to catheter
+== Contributing to HT
  
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
 * Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it
