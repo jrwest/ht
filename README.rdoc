@@ -77,6 +77,25 @@ opposed to two.
 * Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
 * Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
 
+== Roadmap
+
+* Cascade Improvements
+  * Allow cascades to be "reopened" like a ruby class and modified
+  * Delete layer by name
+  * Update layer dependency by name
+  * Cascade mixins? Mix cascades into each other? or have seperate structure?
+  * Give cascade names a purpose
+    * Global cascade hash/table
+    * Build by name instead of cascade instance
+    * Aide in opening existing templates and modifying them
+      * calling new with the name of an existing template can modify or overwrite
+
+* Build Process Improvements
+  * skip layer (skip)
+  * halt/stop (stop execution before or after this layer or on call) 
+  * priority/freeze (mark a value is no longer able to be overwritten during build)
+  * better support for nested hashes in results (maybe a-la mongodb)
+  
 == Copyright
 
 Copyright (c) 2010 Jordan West. See LICENSE.txt for
