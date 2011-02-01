@@ -16,7 +16,7 @@ module HT
 
     def run(cascade, data, name)
       @result = {}
-      @data = data
+      @data = data.freeze
 
       top = cascade[name]
       dependencies = dependency_list(cascade, name).reverse

@@ -124,6 +124,18 @@ class TestBuilder < MiniTest::Unit::TestCase
     builder.run(cascade, @data, :base)
   end
 
+  def test_input_data_is_not_writeable
+    cascade = HT::Cascade.new(:some_cascade) do 
+      base do 
+        data[:a] = 2
+      end
+    end
+
+    assert_raises RuntimeError do 
+      @builder.run(cascade, {a: 1}, :base) 
+    end
+  end
+
   def test_be_backwards_compat_with_0_dot_0_dot_0
     cascade = HT::Cascade.new(:my_cascade) do |t|
       t.base do |t, data|
