@@ -4,7 +4,9 @@ class TestBuilder < MiniTest::Unit::TestCase
 
   def setup
     HT::Cascade.flush_global # remove all global cascades to prevent future issues
-    @cascade = HT::Cascade.new(:my_cascade) do
+
+    @cascade_name = :my_cascade
+    @cascade = HT::Cascade.new(@cascade_name) do
       base do |data|
         set :item, data[:item]
         s :image, "#{data[:player]}.png"
@@ -148,7 +150,7 @@ class TestBuilder < MiniTest::Unit::TestCase
   end
   
   def test_build_by_cascade_name_when_cascade_exists
-    result = @builder.run(:my_cascade, @data, :contribute_super)
+    result = @builder.run(@cascade_name, @data, :contribute_super)
     
     assert_equal @data[:player], result[:player]
     assert_equal @data[:item], result[:item]
@@ -169,8 +171,80 @@ class TestBuilder < MiniTest::Unit::TestCase
     end
   end
 
+  def test_stop_build_and_return_with_current_result
+    HT::Cascade.new(@cascade_name) do 
+      layer :contribute_base do 
+        s :player, 1
+        halt
+      end
+    end
+    
+    expected = {item: @data[:item], image: "#{@data[:player]}.png", player: 1}
+    assert_equal expected,  @builder.run(@cascade_name, @data, :contribute_super)
+  end
+
+  def test_stop_before_and_return_with_last_layer_result
+    HT::Cascade.new(@cascade_name) do 
+      layer :contribute_base do 
+        s :player, 1
+        halt :before
+      end
+
+      layer :new_layer, :contribute_base do
+        assert false # I should never be run or this test fails
+      end
+    end
+    
+    expected = {item: @data[:item], image: "#{@data[:player]}.png"}
+    assert_equal expected, @builder.run(@cascade_name, @data, :new_layer)
+  end
+
+  def test_stop_after_and_return_with_current_layer_result
+    HT::Cascade.new(@cascade_name) do 
+      layer :contribute_base do 
+        halt :after
+        s :player, 1
+      end
+
+      layer :new_layer, :contribute_base do
+        assert false # I should never be run or this test fails
+      end
+    end
+    
+    expected = {item: @data[:item], image: "#{@data[:player]}.png", player: 1}
+    assert_equal expected, @builder.run(@cascade_name, @data, :new_layer)
+  end
+
+  def test_rollback_and_continue
+        HT::Cascade.new(@cascade_name) do 
+      layer :contribute_base do 
+        s :player, 1
+        halt :rollback
+      end
+
+      layer :new_layer, :contribute_base do
+        s :abc, 2
+      end
+    end
+    
+    expected = {item: @data[:item], image: "#{@data[:player]}.png", abc: 2}
+    assert_equal expected, @builder.run(@cascade_name, @data, :new_layer)
+  end
+
+  def test_unkown_halt_type_raises_error
+    HT::Cascade.new(@cascade_name) do 
+      base do 
+        halt :dne
+      end
+    end
+
+    assert_raises HT::Builder::BuildError do 
+      @builder.run(@cascade_name, @data, :base)
+    end
+  end
+
   def test_be_backwards_compat_with_0_dot_0_dot_0
-    cascade = HT::Cascade.new(:my_cascade) do |t|
+    cascade = HT::Cascade.new(@cascade_name) do |t|
       t.base do |t, data|
         t.set_value :d, "abc"
       end
