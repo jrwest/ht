@@ -5,8 +5,8 @@ class TestBuilder < MiniTest::Unit::TestCase
   def setup
     @cascade = HT::Cascade.new(:my_cascade) do
       base do |data|
-        set_value :item, data[:item]
-        set_value :image, "#{data[:player]}.png"
+        set :item, data[:item]
+        s :image, "#{data[:player]}.png"
       end
   
       layer :contribute_base do |data|
@@ -15,7 +15,7 @@ class TestBuilder < MiniTest::Unit::TestCase
       end
   
       layer :contribute_part, :contribute_base do |data|
-        set_value :body, get_value(:image)
+        set_value :body, get(:image)
       end
   
       layer :contribute_part_1, :contribute_base do |data|
