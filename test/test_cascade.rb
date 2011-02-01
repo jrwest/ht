@@ -98,6 +98,70 @@ class TestCascade < MiniTest::Unit::TestCase
     assert_nil HT::Cascade[:def]
   end
 
+  def test_reopen_cascade_with_no_changes
+    block = ->() {}
+    HT::Cascade.new(:def) do 
+      base &block
+      layer :layer_1, &block
+    end
+    HT::Cascade.new(:def)
+    
+    assert_equal block, HT::Cascade[:def].cascade[:base][:block]
+    assert_equal block, HT::Cascade[:def].cascade[:layer_1][:block]
+  end
+
+  def test_reopen_cascade_updates_base_block
+    block1 = ->() { 1 }
+    block2 = ->() { 2 }
+    HT::Cascade.new(:def) do 
+      base &block1
+    end
+    HT::Cascade.new(:def) do 
+      base &block2
+    end
+
+    assert_equal block2, HT::Cascade[:def].cascade[:base][:block]
+  end
+
+  def test_reopen_cascade_updates_layer_block
+    block1 = ->() { 1 }
+    block2 = ->() { 2 }
+    HT::Cascade.new(:def) do 
+      layer :layer_1, &block1
+    end
+    HT::Cascade.new(:def) do 
+      layer :layer_1, &block2
+    end
+
+    assert_equal block2, HT::Cascade[:def].cascade[:layer_1][:block]
+  end
+
+  def test_reopen_cascade_updates_layer_dependency
+    block = @block
+    HT::Cascade.new(:def) do 
+      layer :layer, &block
+      layer :middle, :layer, &block
+      layer :top, :layer, &block
+    end
+    HT::Cascade.new(:def) do 
+      layer :top, :middle, &block
+    end
+
+    assert_equal :middle, HT::Cascade[:def].cascade[:top][:depends]
+  end
+
+  def test_reopen_cascade_can_create_new_layers
+    block = @block
+    HT::Cascade.new(:def)
+    HT::Cascade.new(:def) do 
+      base &block
+      layer :layer, &block
+    end
+
+    assert_equal block, HT::Cascade[:def].cascade[:base][:block]
+    assert_equal block, HT::Cascade[:def].cascade[:layer][:block]
+  end
+
   def test_be_backwards_compat_with_0_dot_0_dot_0
     cascade = HT::Cascade.new(:my_cascade) do |t|
       t.base do |t, data|

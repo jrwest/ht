@@ -70,15 +70,15 @@ Simple templating for ruby hashes
 == Roadmap
 
 * Cascade Improvements
-  * Allow cascades to be "reopened" like a ruby class and modified
+  * Allow cascades to be "reopened" like a ruby class and modified (DONE)
   * Delete layer by name
-  * Update layer dependency by name
+  * Update layer dependency by name without having to pass it the existing block
   * Cascade mixins? Mix cascades into each other? or have seperate structure?
   * Give cascade names a purpose
     * Global cascade hash/table (DONE)
-    * Build by name instead of cascade instance
-    * Aide in opening existing templates and modifying them
-      * calling new with the name of an existing template can modify or overwrite
+    * Build by name instead of cascade instance (DONE)
+    * Aide in opening existing templates and modifying them (DONE)
+      * calling new with the name of an existing template can modify or overwrite (DONE)
 
 * Build Process Improvements
   * skip layer (skip)

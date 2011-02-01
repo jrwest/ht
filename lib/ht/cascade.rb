@@ -25,9 +25,13 @@ module HT
 
     def initialize(name = nil, &block)
       self.name = name
+      if the_cascade = self.class[name]
+        @cascade = the_cascade.cascade
+      else
       @cascade = {base: {depends: nil, block: ->(*args) { }}} # *args supplied to support
                                                               # backwards compat. & arity
                                                               # differences possible in block
+      end
       register(name)
       instance_eval(&block) if block
     end
