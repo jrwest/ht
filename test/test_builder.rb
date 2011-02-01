@@ -3,6 +3,7 @@ require 'helper'
 class TestBuilder < MiniTest::Unit::TestCase
 
   def setup
+    HT::Cascade.flush_global # remove all global cascades to prevent future issues
     @cascade = HT::Cascade.new(:my_cascade) do
       base do |data|
         set :item, data[:item]

@@ -21,7 +21,7 @@ class TestCascade < MiniTest::Unit::TestCase
   end
 
   def test_create_base
-    cascade = HT::Cascade.new(@cascade_name)
+    cascade = HT::Cascade.new
     cascade.base &@block
     
     assert !cascade.cascade[:base][:depends]
@@ -30,7 +30,7 @@ class TestCascade < MiniTest::Unit::TestCase
 
   def test_create_base_inblock
     block = @block
-    cascade = HT::Cascade.new(@cascade_name) do
+    cascade = HT::Cascade.new do
       base &block
     end
 
@@ -38,7 +38,7 @@ class TestCascade < MiniTest::Unit::TestCase
   end
 
   def test_create_layer_no_dependency
-    cascade = HT::Cascade.new(@cascade_name)
+    cascade = HT::Cascade.new
     cascade.layer :my_layer, &@block
 
     assert_equal :base, cascade.cascade[:my_layer][:depends]
@@ -47,7 +47,7 @@ class TestCascade < MiniTest::Unit::TestCase
 
   def test_create_layer_with_existing_dependency
     block2 = ->(res, data) {}
-    cascade = HT::Cascade.new(@cascade_name) do
+    cascade = HT::Cascade.new do
       layer :first_layer, &@block
       layer :second_layer, :first_layer, &block2
     end
@@ -83,6 +83,19 @@ class TestCascade < MiniTest::Unit::TestCase
     HT::Cascade.new do 
       layer :layer_1, &block
     end
+  end
+
+  def test_cascade_name_registered_if_given
+    assert_nil HT::Cascade[:abc]
+    cascade = HT::Cascade.new(:abc)
+    assert_equal cascade, HT::Cascade[:abc]
+  end
+
+  def test_cascade_list_flush
+    cascade = HT::Cascade.new(:def)
+    assert_equal cascade, HT::Cascade[:def]
+    HT::Cascade.flush_global
+    assert_nil HT::Cascade[:def]
   end
 
   def test_be_backwards_compat_with_0_dot_0_dot_0

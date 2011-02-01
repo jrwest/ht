@@ -5,6 +5,20 @@ module HT
     attr_accessor :name
     attr_reader   :cascade
     
+    def self.[](k)
+      @cascades ||= {}
+      @cascades[k.to_s]
+    end
+
+    def self.add_global(name, instance)
+      @cascades ||= {}
+      @cascades[name.to_s] = instance
+    end
+
+    def self.flush_global
+      @cascades = {}
+    end
+
     def [](k)
       @cascade[k]
     end
@@ -14,6 +28,7 @@ module HT
       @cascade = {base: {depends: nil, block: ->(*args) { }}} # *args supplied to support
                                                               # backwards compat. & arity
                                                               # differences possible in block
+      register(name)
       instance_eval(&block) if block
     end
 
@@ -43,5 +58,12 @@ module HT
       (@cascade[layer_name] || {})[:depends]
     end
     
+    private
+
+    def register(name)
+      return unless name
+      self.class.add_global(name, self)
+    end
+
   end
 end

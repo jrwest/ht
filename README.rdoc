@@ -75,7 +75,7 @@ Simple templating for ruby hashes
   * Update layer dependency by name
   * Cascade mixins? Mix cascades into each other? or have seperate structure?
   * Give cascade names a purpose
-    * Global cascade hash/table
+    * Global cascade hash/table (DONE)
     * Build by name instead of cascade instance
     * Aide in opening existing templates and modifying them
       * calling new with the name of an existing template can modify or overwrite
