@@ -3,7 +3,7 @@ require 'helper'
 class TestCascade < MiniTest::Unit::TestCase
   def setup
     @cascade_name = :test_cascade
-    @block = ->(res, data) do 
+    @block = ->(data) do 
       # code in here doesn't matter
     end
   end

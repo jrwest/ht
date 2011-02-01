@@ -4,34 +4,34 @@ class TestBuilder < MiniTest::Unit::TestCase
 
   def setup
     @cascade = HT::Cascade.new(:my_cascade) do
-      base do |res, opts|
-        res.set_value :item, opts[:item]
-        res.set_value :image, "#{opts[:player]}.png"
+      base do |data|
+        set_value :item, data[:item]
+        set_value :image, "#{data[:player]}.png"
       end
   
-      layer :contribute_base do |res, opts|
-        res.set_value :player, opts[:player]
-        res.set_value :image, "#{opts[:item]}.png"
+      layer :contribute_base do |data|
+        set_value :player, data[:player]
+        set_value :image, "#{data[:item]}.png"
       end
   
-      layer :contribute_part, :contribute_base do |res, opts|
-        res.set_value :body, res.get_value(:image)
+      layer :contribute_part, :contribute_base do |data|
+        set_value :body, get_value(:image)
       end
   
-      layer :contribute_part_1, :contribute_base do |res, opts|
-        res.set_value :body, "zxy"
-        res.set_value :field, "def"
-        res.set_value :field2, "123"
+      layer :contribute_part_1, :contribute_base do |data|
+        set_value :body, "zxy"
+        set_value :field, "def"
+        set_value :field2, "123"
       end
   
-      layer :contribute_super, :contribute_part do |res, opts|
-        res.set_value :field, res.get_value(:image)
-        res.set_value :body, "abc"
+      layer :contribute_super, :contribute_part do |data|
+        set_value :field, get_value(:image)
+        set_value :body, "abc"
       end
   
     end
     
-    @opts = {:player => "jordanrw", :item => "cool-thing"}
+    @data = {:player => "jordanrw", :item => "cool-thing"}
     @builder = HT::Builder.new
   end
 
@@ -90,26 +90,38 @@ class TestBuilder < MiniTest::Unit::TestCase
   end
 
   def test_base
-    result = @builder.run(@cascade, @opts, :base)
+    result = @builder.run(@cascade, @data, :base)
     
-    assert_equal @opts[:item], result[:item]
-    assert_equal "#{@opts[:player]}.png", result[:image]
+    assert_equal @data[:item], result[:item]
+    assert_equal "#{@data[:player]}.png", result[:image]
   end
    
   def test_one_layer
-    result = @builder.run(@cascade, @opts, :contribute_base)
+    result = @builder.run(@cascade, @data, :contribute_base)
     
-    assert_equal @opts[:player], result[:player]
-    assert_equal "#{@opts[:item]}.png", result[:image]
+    assert_equal @data[:player], result[:player]
+    assert_equal "#{@data[:item]}.png", result[:image]
   end
   
   def test_two_layers
-    result = @builder.run(@cascade, @opts, :contribute_super)
+    result = @builder.run(@cascade, @data, :contribute_super)
     
-    assert_equal @opts[:player], result[:player]
-    assert_equal @opts[:item], result[:item]
-    assert_equal "#{@opts[:item]}.png", result[:field]
+    assert_equal @data[:player], result[:player]
+    assert_equal @data[:item], result[:item]
+    assert_equal "#{@data[:item]}.png", result[:field]
     assert_equal "abc", result[:body]
   end
  
+  def test_builder_is_implicit_receiver_of_block
+    builder = @builder
+    tester = self
+    cascade = HT::Cascade.new(:a_cascade) do
+      base do |res, data|
+        tester.assert_equal builder, self
+      end
+    end
+    
+    builder.run(cascade, @data, :base)
+  end
+
 end

@@ -17,11 +17,11 @@ module HT
       dependencies = dependency_list(cascade, name).reverse
       dependencies.each do |dependency|
         next unless cascade.has_key?(dependency) && cascade[dependency].has_key?(:block)
-        cascade[dependency][:block].call(self, data)
+        instance_exec data, &cascade[dependency][:block]
       end
       
-      top[:block].call(self, data)
-      
+      instance_exec(data, &top[:block]) if top[:block]
+
       @result
     end
 

@@ -5,31 +5,31 @@ Simple templating for ruby hashes
 = Example Usage
 
     cascade = HT::Cascade.new(:my_cascade) do
-      base do |t, data|
-        t.set_value :d, "abc"
+      base do |data|
+        set_value :d, "abc"
       end
     
-      layer :path_share do |t, data|
-        t.set_value :a, data[:a]
-        t.set_value :b, data[:b]
+      layer :path_share do |data|
+        set_value :a, data[:a]
+        set_value :b, data[:b]
       end
       
-      layer :path_1_mid, :path_share do |t, data|
-        t.set_value :a, data[:b]
+      layer :path_1_mid, :path_share do |data|
+        set_value :a, data[:b]
       end
       
-      layer :path_2_mid, :path_share do |t, data|
-        t.set_value t.get_value(:a), :a
-        t.set_value t.get_value(:b), :b
+      layer :path_2_mid, :path_share do |data|
+        set_value t.get_value(:a), :a
+        set_value t.get_value(:b), :b
       end
       
-      layer :path_1_all, :path_1_mid do |t, data|
-        t.set_value :b, data[:a]
-        t.set_value :c, t.get_value(:a) + t.get_value(:b)
+      layer :path_1_all, :path_1_mid do |data|
+        set_value :b, data[:a]
+        set_value :c, t.get_value(:a) + t.get_value(:b)
       end
       
-      layer :path_2_all, :path_2_mid do |t, data|
-        t.set_value :c, data[:a] * data[:b]
+      layer :path_2_all, :path_2_mid do |data|
+        set_value :c, data[:a] * data[:b]
       end
     end
     
