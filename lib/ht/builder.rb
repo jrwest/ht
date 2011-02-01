@@ -23,10 +23,8 @@ module HT
       dependencies.each do |dependency|
         next unless cascade.has_key?(dependency) && cascade[dependency].has_key?(:block)
         run_layer cascade[dependency], data
-#        instance_exec data, &cascade[dependency][:block]
       end
       
-#      instance_exec(data, &top[:block]) if top[:block]
       run_layer top, data
 
       @data = nil
