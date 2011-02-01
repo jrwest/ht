@@ -1,5 +1,7 @@
+require 'ht/template_methods'
 module HT
   class Builder
+    include TemplateMethods
 
     def dependency_list(cascade, layer_name)
       if direct_dependency = get_dependency(cascade, layer_name)
@@ -24,20 +26,6 @@ module HT
 
       @result
     end
-
-    def set_value(k, v)
-      return unless @result
-      
-      @result[k] = v
-    end
-    alias :set :set_value
-    alias :s :set_value
-    
-    def get_value(k)
-      @result[k] if @result
-    end
-    alias :get :get_value
-    alias :g :get_value
 
     private
 
