@@ -1,6 +1,9 @@
 module HT
   class Cascade
+
     class InvalidDependency < ArgumentError; end
+    
+    BARE_LAYER = ->(*args) { }
 
     attr_accessor :name
     attr_reader   :cascade
@@ -28,7 +31,7 @@ module HT
       if the_cascade = self.class[name]
         @cascade = the_cascade.cascade
       else
-      @cascade = {base: {depends: nil, block: ->(*args) { }}} # *args supplied to support
+      @cascade = {base: {depends: nil, block: BARE_LAYER}} # *args supplied to support
                                                               # backwards compat. & arity
                                                               # differences possible in block
       end
