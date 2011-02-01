@@ -2,6 +2,16 @@
 
 Simple templating for ruby hashes
 
+== No Longer Backwards Compatible with 0.0.0
+
+all code based on HT v0.0.0 will not be compatible with the current
+master or future releases. Some minor changes must be made to use
+v0.0.0 cascades with the new updates. Mostly you must remove some
+paramaters passed to the blocks in the cascade DSL. See the example
+below and notice that HT::Cascade.new no longer passes in an argument
+and #layer and #base only pass in one argument, the input data, as
+opposed to two.
+
 = Example Usage
 
     cascade = HT::Cascade.new(:my_cascade) do
