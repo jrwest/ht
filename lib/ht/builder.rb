@@ -3,6 +3,8 @@ module HT
   class Builder
     include TemplateMethods
 
+    attr_reader :data
+
     def dependency_list(cascade, layer_name)
       if direct_dependency = get_dependency(cascade, layer_name)
         [direct_dependency] + dependency_list(cascade, direct_dependency)
@@ -14,7 +16,8 @@ module HT
 
     def run(cascade, data, name)
       @result = {}
-      
+      @data = data
+
       top = cascade[name]
       dependencies = dependency_list(cascade, name).reverse
       dependencies.each do |dependency|
@@ -26,6 +29,7 @@ module HT
 #      instance_exec(data, &top[:block]) if top[:block]
       run_layer top, data
 
+      @data = nil
       @result
     end
 

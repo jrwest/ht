@@ -9,7 +9,7 @@ class TestBuilder < MiniTest::Unit::TestCase
         s :image, "#{data[:player]}.png"
       end
   
-      layer :contribute_base do |data|
+      layer :contribute_base do 
         set_value :player, data[:player]
         set_value :image, "#{data[:item]}.png"
       end
