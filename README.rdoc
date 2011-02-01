@@ -33,23 +33,29 @@ Simple templating for ruby hashes
       end
     end
     
-    >> cascade.build(:path_1_all, {:a => 1, :b => 2})
-    {:a => 2, :b => 1, :c => 3, :d => "abc"}
+    >> builder = HT::Builder.new
+    => #<HT::Builder ...>
+
+    >> data = {:a => 1, :b => 2}
+    {:a => 1, :b => 2}
+
+    >> builder.run(cascade, data, :path_1_all)
+    => {:d=>"abc", :a=>2, :b=>1, :c=>3}
     
-    >> cascade.build(:path_1_mid, {:a => 1, :b => 2})
-    {:a => :2, :b => 2, :d => "abc"}
+    >> builder.run(cascade, data, :path_1_mid)
+    => {:d=>"abc", :a=>2, :b=>2}
    
-    >> cascade.build(:path_2_all, {:a => 1, :b => 2})
-    {1 => :a, 2 => :b, :a => 1, :b => 2, :c => 2, :d => "abc"}
+    >> builder.run(cascade, data, :path_2_all)
+    => {:d=>"abc", :a=>1, :b=>2, 1=>:a, 2=>:b, :c=>2}
    
-    >> cascade.build(:path_2_mid, {:a => 1, :b => 2})
-    {1 => :a, 2 => :b, , :a => 1, :b => 2, :d => "abc"}
+    >> builder.run(cascade, data, :path_2_mid)
+    => {:d=>"abc", :a=>1, :b=>2, 1=>:a, 2=>:b}
    
-    >> cascade.build(:path_share, {:a => 1, :b => 2})
-    {:a => 1, :b => 2, :d => "abc"}
+    >> builder.run(cascade, data, :path_share)
+    => {:d=>"abc", :a=>1, :b=>2}
    
-    >> cascade.build(:base, {:a => 1, :b => 2})
-    {:d => "abc"}
+    >> builder.run(cascade, data, :base)
+    => {:d => "abc"}
 
 == Contributing to HT
  
