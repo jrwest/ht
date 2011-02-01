@@ -8,11 +8,13 @@ module HT
         @halt_before = true
       when :rollback
         @rollback = true
+      when :continue
+        @rollback = false
       else
         raise Builder::BuildError.new("Don't know how to halt #{type}")
       end
 
-      throw :ht_halt if type == :none
+      throw :ht_halt if [:none, :continue].include?(type)
     end
   end
 end

@@ -216,7 +216,7 @@ class TestBuilder < MiniTest::Unit::TestCase
   end
 
   def test_rollback_and_continue
-        HT::Cascade.new(@cascade_name) do 
+    HT::Cascade.new(@cascade_name) do 
       layer :contribute_base do 
         s :player, 1
         halt :rollback
@@ -228,6 +228,23 @@ class TestBuilder < MiniTest::Unit::TestCase
     end
     
     expected = {item: @data[:item], image: "#{@data[:player]}.png", abc: 2}
+    assert_equal expected, @builder.run(@cascade_name, @data, :new_layer)
+  end
+
+  def test_continue_command
+    HT::Cascade.new(@cascade_name) do 
+      layer :contribute_base do 
+        s :player, 1
+        halt :continue
+        s :def, 3
+      end
+
+      layer :new_layer, :contribute_base do
+        s :abc, 2
+      end
+    end
+    
+    expected = {item: @data[:item], image: "#{@data[:player]}.png", player: 1, abc: 2}
     assert_equal expected, @builder.run(@cascade_name, @data, :new_layer)
   end
 
