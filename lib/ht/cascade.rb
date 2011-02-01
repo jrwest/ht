@@ -13,6 +13,12 @@ module HT
       @cascade = {base: nil}
       instance_eval(&block) if block
     end
+
+    # this method should not be used. It is deprected but exists for
+    # backwards compatibility with v0.0.0
+    def build(layer_name, data)
+      Builder.new.run(cascade, data, layer_name)
+    end
     
     def base(&block)
       @cascade[:base] = {depends: nil, block: block}

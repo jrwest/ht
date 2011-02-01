@@ -57,4 +57,19 @@ class TestCascade < MiniTest::Unit::TestCase
   def test_create_layer_fails_with_circular_dependency
     skip "Not Implemented"
   end
+
+  def test_be_backwards_compat_with_0_dot_0_dot_0
+    cascade = HT::Cascade.new(:my_cascade) do |t|
+      t.base do |t, data|
+        t.set_value :d, "abc"
+      end
+
+      t.layer :path_share do |t, data|
+        t.set_value :a, data[:a]
+        t.set_value :b, data[:b]
+      end
+    end
+
+    assert_equal 1, cascade.build(:path_share, {a: 1, b: 2})[:a]
+  end
 end
