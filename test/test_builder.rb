@@ -116,7 +116,7 @@ class TestBuilder < MiniTest::Unit::TestCase
     builder = @builder
     tester = self
     cascade = HT::Cascade.new(:a_cascade) do
-      base do |res, data|
+      base do |data|
         tester.assert_equal builder, self
       end
     end
@@ -124,4 +124,18 @@ class TestBuilder < MiniTest::Unit::TestCase
     builder.run(cascade, @data, :base)
   end
 
+  def test_be_backwards_compat_with_0_dot_0_dot_0
+    cascade = HT::Cascade.new(:my_cascade) do |t|
+      t.base do |t, data|
+        t.set_value :d, "abc"
+      end
+
+      t.layer :path_share do |t, data|
+        t.set_value :a, data[:a]
+        t.set_value :b, data[:b]
+      end
+    end
+
+    assert_equal 1, HT::Builder.new.run(cascade, {a: 1, b: 2}, :path_share)[:a]
+  end
 end
