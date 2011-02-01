@@ -3,28 +3,28 @@ require 'helper'
 class TestBuilder < MiniTest::Unit::TestCase
 
   def setup
-    @cascade = HT::Cascade.new(:my_cascade) do |t|
-      t.base do |res, opts|
+    @cascade = HT::Cascade.new(:my_cascade) do
+      base do |res, opts|
         res.set_value :item, opts[:item]
         res.set_value :image, "#{opts[:player]}.png"
       end
   
-      t.layer :contribute_base do |res, opts|
+      layer :contribute_base do |res, opts|
         res.set_value :player, opts[:player]
         res.set_value :image, "#{opts[:item]}.png"
       end
   
-      t.layer :contribute_part, :contribute_base do |res, opts|
+      layer :contribute_part, :contribute_base do |res, opts|
         res.set_value :body, res.get_value(:image)
       end
   
-      t.layer :contribute_part_1, :contribute_base do |res, opts|
+      layer :contribute_part_1, :contribute_base do |res, opts|
         res.set_value :body, "zxy"
         res.set_value :field, "def"
         res.set_value :field2, "123"
       end
   
-      t.layer :contribute_super, :contribute_part do |res, opts|
+      layer :contribute_super, :contribute_part do |res, opts|
         res.set_value :field, res.get_value(:image)
         res.set_value :body, "abc"
       end

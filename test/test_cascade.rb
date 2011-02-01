@@ -23,8 +23,9 @@ class TestCascade < MiniTest::Unit::TestCase
   end
 
   def test_create_base_inblock
-    cascade = HT::Cascade.new(@cascade_name) do |c|
-      c.base &@block
+    block = @block
+    cascade = HT::Cascade.new(@cascade_name) do
+      base &block
     end
 
     assert_equal @block, cascade.cascade[:base][:block]
@@ -40,9 +41,9 @@ class TestCascade < MiniTest::Unit::TestCase
 
   def test_create_layer_with_existing_dependency
     block2 = ->(res, data) {}
-    cascade = HT::Cascade.new(@cascade_name) do |c|
-      c.layer :first_layer, &@block
-      c.layer :second_layer, :first_layer, &block2
+    cascade = HT::Cascade.new(@cascade_name) do
+      layer :first_layer, &@block
+      layer :second_layer, :first_layer, &block2
     end
 
     assert_equal :first_layer, cascade.cascade[:second_layer][:depends]
