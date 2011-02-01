@@ -8,7 +8,7 @@ module HT
       @cascade[k]
     end
 
-    def initialize(name, &block)
+    def initialize(name = nil, &block)
       self.name = name
       @cascade = {base: nil}
       instance_eval(&block) if block

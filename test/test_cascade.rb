@@ -8,7 +8,13 @@ class TestCascade < MiniTest::Unit::TestCase
     end
   end
 
-  def test_cascade_has_name
+  def test_cascade_has_no_name_if_not_given
+    cascade = HT::Cascade.new
+
+    assert_nil cascade.name
+  end
+
+  def test_cascade_has_name_if_given
     cascade = HT::Cascade.new(@cascade_name)
 
     assert_equal @cascade_name, cascade.name
