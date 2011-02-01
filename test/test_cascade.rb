@@ -57,11 +57,32 @@ class TestCascade < MiniTest::Unit::TestCase
   end
 
   def test_create_layer_fails_with_nonexisting_dependency
-    skip "Not Implemented"
+    block = @block
+    assert_raises HT::Cascade::InvalidDependency do 
+      HT::Cascade.new do 
+        base &block
+        layer :some_layer, :dne, &block
+      end
+    end
   end
 
   def test_create_layer_fails_with_circular_dependency
-    skip "Not Implemented"
+    block = @block
+    assert_raises HT::Cascade::InvalidDependency do
+      HT::Cascade.new do 
+        base  &block
+        layer :layer_1, :layer_1, &block
+      end
+    end
+  end
+
+  # if this test errors it fails and is why it
+  # has no assertions
+  def test_create_layer_aloud_with_no_base
+    block = @block
+    HT::Cascade.new do 
+      layer :layer_1, &block
+    end
   end
 
   def test_be_backwards_compat_with_0_dot_0_dot_0

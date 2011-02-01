@@ -1,5 +1,6 @@
 module HT
   class Cascade
+    class InvalidDependency < ArgumentError; end
 
     attr_accessor :name
     attr_reader   :cascade
@@ -10,7 +11,9 @@ module HT
 
     def initialize(name = nil, &block)
       self.name = name
-      @cascade = {base: nil}
+      @cascade = {base: {depends: nil, block: ->(*args) { }}} # *args supplied to support
+                                                              # backwards compat. & arity
+                                                              # differences possible in block
       instance_eval(&block) if block
     end
 
@@ -25,6 +28,8 @@ module HT
     end
     
     def layer(name, dependency=:base, &block)
+      raise HT::Cascade::InvalidDependency.new("Circular Dependency") if name == dependency
+      raise HT::Cascade::InvalidDependency.new("Dependency D.N.E") unless @cascade[dependency]
       @cascade[name] = {depends: dependency, block: block}
     end
 

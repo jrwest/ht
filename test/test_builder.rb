@@ -124,6 +124,16 @@ class TestBuilder < MiniTest::Unit::TestCase
     builder.run(cascade, @data, :base)
   end
 
+  def test_when_no_base_exists 
+    cascade = HT::Cascade.new do
+      layer :layer_1 do
+        s :a, 1
+      end
+    end
+
+    assert_equal 1, @builder.run(cascade, {}, :layer_1)[:a]
+  end
+
   def test_input_data_is_not_writeable
     cascade = HT::Cascade.new(:some_cascade) do 
       base do 
