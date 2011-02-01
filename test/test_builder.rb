@@ -146,6 +146,28 @@ class TestBuilder < MiniTest::Unit::TestCase
       @builder.run(cascade, {a: 1}, :base) 
     end
   end
+  
+  def test_build_by_cascade_name_when_cascade_exists
+    result = @builder.run(:my_cascade, @data, :contribute_super)
+    
+    assert_equal @data[:player], result[:player]
+    assert_equal @data[:item], result[:item]
+    assert_equal "#{@data[:item]}.png", result[:field]
+    assert_equal "abc", result[:body]
+
+  end
+
+  def test_build_by_cascade_name_when_cascade_name_dne_raises_error
+    assert_raises HT::Builder::BuildError do 
+      @builder.run(:dne, @data, :contribute_super)
+    end
+  end
+
+  def test_build_with_nil_as_cascade_raises_error
+    assert_raises HT::Builder::BuildError do 
+      @builder.run(nil, @data, :contribute_super)
+    end
+  end
 
   def test_be_backwards_compat_with_0_dot_0_dot_0
     cascade = HT::Cascade.new(:my_cascade) do |t|

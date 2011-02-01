@@ -35,7 +35,7 @@ module HT
     # this method should not be used. It is deprected but exists for
     # backwards compatibility with v0.0.0
     def build(layer_name, data)
-      Builder.new.run(cascade, data, layer_name)
+      Builder.new.run(self, data, layer_name)
     end
     
     def base(&block)

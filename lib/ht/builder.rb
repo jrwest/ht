@@ -3,6 +3,8 @@ module HT
   class Builder
     include TemplateMethods
 
+    class BuildError < RuntimeError; end
+
     attr_reader :data
 
     def dependency_list(cascade, layer_name)
@@ -15,6 +17,7 @@ module HT
     end
 
     def run(cascade, data, name)
+      cascade = get_cascade(cascade)
       @result = {}
       @data = data.freeze
 
@@ -48,5 +51,17 @@ module HT
         instance_exec data, &block
       end
     end
+    
+    def get_cascade(cascade)
+      res = case cascade
+      when Cascade
+        cascade
+      else
+        Cascade[cascade]
+      end
+
+      res.nil? ? raise(BuildError.new("Invalid Cascade")) : res
+    end
+
   end
 end
