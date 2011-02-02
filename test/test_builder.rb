@@ -260,6 +260,66 @@ class TestBuilder < MiniTest::Unit::TestCase
     end
   end
 
+  def test_halt_before_overrides_halt_none
+    HT::Cascade.new(@cascade_name) do 
+      base do 
+        s :a, 1
+        halt :before
+        s :b, 2
+        halt
+        s :c, 3
+      end
+    end
+
+    expected = {}
+    assert_equal expected, @builder.run(@cascade_name, @data, :base)
+  end
+
+  def test_halt_none_overrides_halt_before
+    HT::Cascade.new(@cascade_name) do
+      base do 
+        s :a, 1
+        halt
+        s :b, 2
+        halt :before
+        s :c, 3
+      end
+    end
+
+    expected = {a: 1}
+    assert_equal expected, @builder.run(@cascade_name, @data, :base)
+  end
+
+  def test_halt_before_following_halt_after_ovverrides
+    HT::Cascade.new(@cascade_name) do 
+      base do 
+        s :a, 1
+        halt :after
+        s :b, 2
+        halt :before
+        s :b, 3
+      end
+    end
+    
+    expected = {}
+    assert_equal expected, @builder.run(@cascade_name, @data, :base)
+  end
+
+  def test_halt_after_following_halt_before_does_not_override
+    HT::Cascade.new(@cascade_name) do 
+      base do 
+        s :a, 1
+        halt :before
+        s :b, 2
+        halt :after
+        s :a, 3
+      end
+    end
+
+    expected = {}
+    assert_equal expected, @builder.run(@cascade_name, @data, :base)
+  end
+
   def test_be_backwards_compat_with_0_dot_0_dot_0
     cascade = HT::Cascade.new(@cascade_name) do |t|
       t.base do |t, data|

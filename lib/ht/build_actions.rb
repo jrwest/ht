@@ -14,7 +14,7 @@ module HT
         raise Builder::BuildError.new("Don't know how to halt #{type}")
       end
 
-      throw :ht_halt if [:none, :continue].include?(type)
+      throw :ht_halt if [:none, :before, :continue, :rollback].include?(type)
     end
   end
 end
