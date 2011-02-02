@@ -2,6 +2,7 @@ require 'helper'
 
 class TestCascade < MiniTest::Unit::TestCase
   def setup
+    HT::Cascade.flush_global
     @cascade_name = :test_cascade
     @block = ->(data) do 
       # code in here doesn't matter
@@ -192,6 +193,83 @@ class TestCascade < MiniTest::Unit::TestCase
     assert_equal block, HT::Cascade[:def].cascade[:layer_1][:block]
     assert_equal :base, HT::Cascade[:def].cascade[:layer_2][:depends]
     assert_equal block, HT::Cascade[:def].cascade[:layer_2][:block]
+  end
+
+  def test_mixin_defined_prior_with_no_conflicts
+    block = @block
+    HT::Cascade.new(:one) do 
+      layer :layer_1, &block
+    end
+    HT::Cascade.new(:two) do 
+      mix :one
+
+      base &block
+    end
+
+    assert_equal [:one], HT::Cascade[:two].mixins
+    assert HT::Cascade[:two].cascade.has_key?(:layer_1), "Layer not mixed"
+  end
+
+  def test_mixin_defined_post_with_no_conflicts
+    block = @block
+    HT::Cascade.new(:two) do 
+      mix :one
+
+      base &block
+    end
+    HT::Cascade.new(:one) do 
+      layer :layer_1, &block
+    end
+
+    assert_equal [:one], HT::Cascade[:two].mixins
+    assert HT::Cascade[:two].cascade.has_key?(:layer_1), "Layer not mixed"
+
+  end
+
+  def test_mixin_preserves_base_of_calling_cascade
+    block1 = ->() {1}
+    block2 = ->() {2}
+    HT::Cascade.new(:one) do 
+      base &block1
+    end
+    HT::Cascade.new(:two) do 
+      base &block2
+
+      mix :one
+    end
+    
+    assert_equal [:one], HT::Cascade[:two].mixins
+    assert_equal block2, HT::Cascade[:two].cascade[:base][:block]
+  end
+
+  def test_reopen_cascade_preserves_mixins
+    block = @block
+    HT::Cascade.new(:two) do 
+      mix :one
+    end
+    HT::Cascade.new(:one) do 
+      layer :layer_1, &block
+    end
+    HT::Cascade.new(:two) do 
+      base &block
+    end
+
+    assert_equal [:one], HT::Cascade[:two].mixins
+    assert HT::Cascade[:two].cascade.has_key?(:layer_1)
+  end
+
+  def test_mixin_raises_error_on_circular_mix
+    assert_raises ArgumentError do 
+      HT::Cascade.new(:name) do 
+        mix :name
+      end
+    end
+
+    assert_raises ArgumentError do 
+      HT::Cascade.new(:name) do 
+        mix self # self is HT::Cascade here (using instance_exec not v0.0.0 call style)
+      end 
+    end
   end
 
   def test_be_backwards_compat_with_0_dot_0_dot_0
