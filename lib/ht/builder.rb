@@ -63,8 +63,7 @@ module HT
 
     def prepare_run
       @layer_result = {}
-      @halt_before = false
-      @halt_after = false
+      @halt = false
       @rollback = false
     end
 
@@ -87,11 +86,11 @@ module HT
     end
 
     def rollback_run?
-      @halt_before || @rollback
+      @rollback
     end
 
     def stop_execution?
-      @halt_before || @halt_after
+      @halt
     end
 
   end
