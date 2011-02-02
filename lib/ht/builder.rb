@@ -19,21 +19,18 @@ module HT
 
     end
 
-    def run(cascade, data, name)
+    def run(cascade, data, layer_name)
       cascade = get_cascade(cascade)
       @result = {}
       @data = data.freeze
       
-
-      top = cascade[name]
-      dependencies = dependency_list(cascade, name).reverse
+      dependencies = dependency_list(cascade, layer_name).reverse
       catch :ht_stop do 
-        dependencies.each do |dependency|
-          next unless cascade.has_key?(dependency) && cascade[dependency].has_key?(:block)
-          run_layer cascade[dependency], data
+        (dependencies + [layer_name]).each do |layer|
+          raise BuildError.new("Unkown Layer: #{layer_name}") unless (layer_info = cascade[layer]) && layer_info[:block]
+          
+          run_layer layer_info, data
         end
-      
-        run_layer top, data
       end
 
       @data = nil

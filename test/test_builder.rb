@@ -320,6 +320,12 @@ class TestBuilder < MiniTest::Unit::TestCase
     assert_equal expected, @builder.run(@cascade_name, @data, :base)
   end
 
+  def test_run_raises_build_error_if_not_given_valid_layer
+    assert_raises HT::Builder::BuildError do 
+      @builder.run(@cascade_name, @data, :dne)
+    end
+  end
+
   def test_be_backwards_compat_with_0_dot_0_dot_0
     cascade = HT::Cascade.new(@cascade_name) do |t|
       t.base do |t, data|
