@@ -162,6 +162,22 @@ class TestCascade < MiniTest::Unit::TestCase
     assert_equal block, HT::Cascade[:def].cascade[:layer][:block]
   end
 
+  def test_delete_layer_ignored_when_layer_dne
+    HT::Cascade.new(:def) do 
+      delete_layer :layer_1
+    end
+
+    assert_nil HT::Cascade[:def].cascade[:layer_1]
+  end
+
+  def test_delete_layer
+    block = @block
+    HT::Cascade.new(:def) { layer :layer_1, &block }
+    HT::Cascade.new(:def) { delete_layer :layer_1 }
+    
+    assert_nil HT::Cascade[:def].cascade[:layer_1]
+  end
+
   def test_be_backwards_compat_with_0_dot_0_dot_0
     cascade = HT::Cascade.new(:my_cascade) do |t|
       t.base do |t, data|

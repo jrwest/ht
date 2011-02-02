@@ -55,12 +55,16 @@ module HT
       @cascade[name] = {depends: dependency, block: block}
     end
 
-    def has_layer?(name)
-      @cascade.has_key?(name)
+    def has_layer?(layer_name)
+      @cascade.has_key?(layer_name)
     end
     alias :has_key? :has_layer? # to allow support for passing hashes in place of 
                                 # a real cascade in the build process for testing
     
+    def delete_layer(layer_name)
+      @cascade.delete(layer_name)
+    end
+
     def dependency(layer_name)
       (@cascade[layer_name] || {})[:depends]
     end
