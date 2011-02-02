@@ -178,6 +178,22 @@ class TestCascade < MiniTest::Unit::TestCase
     assert_nil HT::Cascade[:def].cascade[:layer_1]
   end
 
+  def test_update_layer_dependency
+    block = @block
+    HT::Cascade.new(:def) do
+      layer :layer_1, &block
+      layer :layer_2, :layer_1, &block
+      layer :layer_3, &block
+    end
+    HT::Cascade.new(:def) { layer :layer_1, :layer_3 }
+    HT::Cascade.new(:def) { layer :layer_2 }
+
+    assert_equal :layer_3, HT::Cascade[:def].cascade[:layer_1][:depends]
+    assert_equal block, HT::Cascade[:def].cascade[:layer_1][:block]
+    assert_equal :base, HT::Cascade[:def].cascade[:layer_2][:depends]
+    assert_equal block, HT::Cascade[:def].cascade[:layer_2][:block]
+  end
+
   def test_be_backwards_compat_with_0_dot_0_dot_0
     cascade = HT::Cascade.new(:my_cascade) do |t|
       t.base do |t, data|

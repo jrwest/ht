@@ -50,7 +50,13 @@ module HT
     def layer(name, dependency=:base, &block)
       raise HT::Cascade::InvalidDependency.new("Circular Dependency") if name == dependency
       raise HT::Cascade::InvalidDependency.new("Dependency D.N.E") unless @cascade[dependency]
-      @cascade[name] = {depends: dependency, block: block}
+
+      if @cascade[name]
+        @cascade[name][:depends] = dependency if dependency
+        @cascade[name][:block] = block if block
+      else
+        @cascade[name] = {depends: dependency, block: block}
+      end
     end
 
     def has_layer?(layer_name)
