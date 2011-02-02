@@ -31,9 +31,7 @@ module HT
       if the_cascade = self.class[name]
         @cascade = the_cascade.cascade
       else
-      @cascade = {base: {depends: nil, block: BARE_LAYER}} # *args supplied to support
-                                                              # backwards compat. & arity
-                                                              # differences possible in block
+      @cascade = {base: {depends: nil, block: BARE_LAYER}} 
       end
       register(name)
       instance_eval(&block) if block
