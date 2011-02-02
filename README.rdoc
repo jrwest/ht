@@ -81,7 +81,7 @@ Simple templating for ruby hashes
       * calling new with the name of an existing template can modify or overwrite (DONE)
 
 * Build Process Improvements
-  * skip layer (e.g. skip) (PARTIALLY DONE - There is a rollback but no continue)
+  * skip layer (e.g. skip) (DONE)
   * halt/stop (e.g. stop execution before or after this layer or on call) (DONE)
   * priority/freeze (e.g. mark a value is no longer able to be overwritten during build)
   * better support for nested hashes in results (? maybe a-la mongodb)
